@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Birthday Maker</title>
+<style>
+:root{
+  --bg:#f3eefb;
+  --purple:#7b4fc9;
+  --purple-dark:#5d35a2;
+  --purple-light:#eee7fb;
+
+  /* Month用 */
+  --month:#ff9f43;
+  --month-dark:#d97706;
+  --month-light:#fff0dd;
+
+  /* 3つのボタン色 */
+  --listen:#4f8df7;
+  --question:#ff9f43;
+  --random:#42b883;
+
+  --text:#333;
+  --card-radius:20px;
+  --shadow:0 6px 16px rgba(0,0,0,0.08);
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  font-family:Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+body{
+  text-align:center;
+}
+
+.app{
+  height:100dvh;
+  display:grid;
+  grid-template-rows:auto 1fr;
+  overflow:hidden;
+}
+
+.header{
+  background:var(--purple);
+  color:white;
+  padding:10px 10px;
+  font-size:clamp(20px, 2.4vw, 28px);
+  font-weight:bold;
+  line-height:1.2;
+}
+
+.container{
+  width:min(1200px, 100%);
+  margin:0 auto;
+  padding:10px 12px 12px;
+  height:100%;
+  display:grid;
+  grid-template-rows:auto 1fr;
+  gap:10px;
+  overflow:hidden;
+}
+
+.card{
+  background:white;
+  border-radius:var(--card-radius);
+  padding:12px;
+  box-shadow:var(--shadow);
+  min-height:0;
+}
+
+.top-card{
+  display:grid;
+  grid-template-rows:auto auto auto auto;
+  gap:8px;
+}
+
+.question{
+  font-size:clamp(22px, 2.5vw, 30px);
+  font-weight:bold;
+  color:var(--purple-dark);
+  line-height:1.2;
+}
+
+.sentence{
+  font-size:clamp(24px, 3vw, 34px);
+  font-weight:bold;
+  line-height:1.25;
+  color:#222;
+  word-break:break-word;
+}
+
+.hint{
+  font-size:clamp(15px, 1.8vw, 20px);
+  color:#666;
+  line-height:1.3;
+}
+
+.controls{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:10px;
+  margin-top:2px;
+}
+
+.main-btn{
+  color:white;
+  border:none;
+  border-radius:1000px;
+  padding:14px 10px;
+  font-size:clamp(15px, 1.7vw, 20px);
+  font-weight:bold;
+  cursor:pointer;
+  line-height:1.1;
+  min-height:52px;
+  box-shadow:0 8px 18px rgba(0,0,0,0.18);
+  transition:all 0.18s ease;
+}
+
+.main-btn:active{
+  transform:scale(0.98);
+}
+
+.listen-btn{
+  background:linear-gradient(180deg,#64b5f6 0%, #2196f3 100%) !important;
+}
+
+.question-btn{
+  background:linear-gradient(180deg, #ffb869 0%, var(--question) 100%);
+}
+
+.random-btn{
+  background:linear-gradient(180deg, #63d4a2 0%, var(--random) 100%);
+}
+
+.speed-wrap{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:8px;
+  margin-top:2px;
+}
+
+.speed-label{
+  font-size:clamp(15px, 1.7vw, 20px);
+  font-weight:bold;
+  white-space:nowrap;
+}
+
+.speed-control{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+}
+
+.speed-btn{
+  width:38px;
+  height:38px;
+  border:none;
+  border-radius:50%;
+  background:var(--purple);
+  color:white;
+  font-size:24px;
+  font-weight:bold;
+  cursor:pointer;
+  line-height:1;
+  flex-shrink:0;
+  box-shadow:0 5px 12px rgba(0,0,0,0.16);
+}
+
+.speed-btn:active{
+  transform:scale(0.96);
+}
+
+input[type="range"]{
+  width:100%;
+  min-width:0;
+}
+
+.speed-value{
+  min-width:40px;
+  font-size:clamp(15px, 1.7vw, 20px);
+  font-weight:bold;
+  text-align:right;
+}
+
+.bottom-grid{
+  min-height:0;
+  display:grid;
+  grid-template-columns:0.85fr 1.15fr;
+  gap:10px;
+}
+
+.section-card{
+  display:grid;
+  grid-template-rows:auto 1fr;
+  min-height:0;
+}
+
+.section-title{
+  font-size:clamp(18px, 2vw, 24px);
+  font-weight:bold;
+  margin-bottom:8px;
+  line-height:1.2;
+}
+
+.section-title.month-title{
+  color:#d97706;
+}
+
+.section-title.day-title{
+  color:var(--purple-dark);
+}
+
+.button-area{
+  min-height:0;
+  align-content:start;
+}
+
+#months{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0, 1fr));
+  gap:6px;
+}
+
+#days{
+  display:grid;
+  grid-template-columns:repeat(7, minmax(0, 1fr));
+  gap:6px;
+}
+
+.choice-btn{
+  border:none;
+  border-radius:1000px;
+  padding:9px 4px;
+  font-size:clamp(12px, 1.25vw, 17px);
+  cursor:pointer;
+  font-weight:bold;
+  min-height:36px;
+  line-height:1.1;
+  transition:all 0.18s ease;
+  box-shadow:0 3px 6px rgba(0,0,0,0.15);
+}
+
+.choice-btn:active{
+  transform:scale(0.96);
+}
+
+/* Month用 */
+#months .choice-btn{
+  background:var(--month-light);
+  color:var(--month-dark);
+  border:2px solid #ffd3a4;
+}
+
+#months .choice-btn.selected{
+  background:var(--month);
+  color:white;
+  border:2px solid var(--month);
+  box-shadow:0 5px 12px rgba(255,159,67,0.35);
+}
+
+/* Day用 */
+#days .choice-btn{
+  background:var(--purple-light);
+  color:#4d2d89;
+  border:2px solid #d9c6fa;
+}
+
+#days .choice-btn.selected{
+  background:var(--purple);
+  color:white;
+  border:2px solid var(--purple);
+  box-shadow:0 5px 12px rgba(123,79,201,0.30);
+}
+
+@media (hover:hover){
+  #months .choice-btn:hover,
+  #days .choice-btn:hover{
+    transform:translateY(-1px);
+  }
+
+  .main-btn:hover,
+  .speed-btn:hover{
+    filter:brightness(1.05);
+  }
+}
+
+@media (max-width: 1024px){
+  .container{
+    padding:8px 10px 10px;
+    gap:8px;
+  }
+
+  .card{
+    padding:10px;
+  }
+
+  .bottom-grid{
+    gap:8px;
+  }
+
+  #months{
+    gap:5px;
+  }
+
+  #days{
+    gap:5px;
+  }
+
+  .choice-btn{
+    padding:7px 2px;
+    min-height:32px;
+  }
+}
+
+@media (orientation: portrait){
+  .container{
+    grid-template-rows:auto 1fr;
+  }
+
+  .bottom-grid{
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+
+  #months{
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+  }
+
+  #days{
+    grid-template-columns:repeat(5, minmax(0, 1fr));
+  }
+
+  .choice-btn{
+    font-size:clamp(11px, 1.6vw, 15px);
+    min-height:30px;
+    padding:6px 2px;
+  }
+
+  .main-btn{
+    font-size:clamp(14px, 1.8vw, 18px);
+    padding:10px 6px;
+    min-height:46px;
+  }
+
+  .speed-btn{
+    width:34px;
+    height:34px;
+    font-size:22px;
+  }
+}
+
+@media (max-width: 700px){
+  .header{
+    padding:8px 8px;
+  }
+
+  .controls{
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:6px;
+  }
+
+  .speed-wrap{
+    grid-template-columns:1fr;
+    gap:6px;
+  }
+
+  .speed-value{
+    text-align:center;
+  }
+
+  .bottom-grid{
+    gap:6px;
+  }
+
+  #months{
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+  }
+
+  #days{
+    grid-template-columns:repeat(5, minmax(0, 1fr));
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">English Maker</div>
+
+  <div class="container">
+    <div class="card top-card">
+      <div class="question" id="questionText">When is your birthday?</div>
+
+      <div class="sentence" id="sentence">My birthday is January 1st.</div>
+
+      <div class="hint" id="hint">わたしのたんじょうびは 1月1日です。</div>
+
+      <div class="controls">
+        <button class="main-btn question-btn" onclick="speakQuestion()">❓ Question</button>
+        <button class="main-btn listen-btn" onclick="speakSentence()">🔊 Listen</button>
+        <button class="main-btn random-btn" onclick="randomPick()">🎲 Random</button>
+      </div>
+
+      <div class="speed-wrap">
+        <span class="speed-label">Speed</span>
+        <div class="speed-control">
+          <button class="speed-btn" onclick="changeSpeed(-0.1)">−</button>
+          <input type="range" id="speed" min="0.3" max="1.5" step="0.1" value="0.5">
+          <button class="speed-btn" onclick="changeSpeed(0.1)">＋</button>
+        </div>
+        <span class="speed-value" id="speedValue">0.5</span>
+      </div>
+    </div>
+
+    <div class="bottom-grid">
+      <div class="card section-card">
+        <div class="section-title month-title">🟠 Month</div>
+        <div class="button-area" id="months"></div>
+      </div>
+
+      <div class="card section-card">
+        <div class="section-title day-title">🟣 Day</div>
+        <div class="button-area" id="days"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let month = "January";
+let day = "1st";
+
+const months = [
+  "January","February","March","April","May","June",
+  "July","August","September","October","November","December"
+];
+
+const days = [
+  "1st","2nd","3rd","4th","5th","6th","7th","8th","9th","10th",
+  "11th","12th","13th","14th","15th","16th","17th","18th","19th","20th",
+  "21st","22nd","23rd","24th","25th","26th","27th","28th","29th","30th","31st"
+];
+
+const monthJP = {
+  "January":"1月","February":"2月","March":"3月","April":"4月",
+  "May":"5月","June":"6月","July":"7月","August":"8月",
+  "September":"9月","October":"10月","November":"11月","December":"12月"
+};
+
+function update(){
+  const sentence = "My birthday is " + month + " " + day + ".";
+  document.getElementById("sentence").innerText = sentence;
+  document.getElementById("hint").innerText =
+    "わたしのたんじょうびは " +
+    monthJP[month] +
+    day.replace("st","").replace("nd","").replace("rd","").replace("th","") +
+    "日です。";
+  highlightSelected();
+}
+
+function highlightSelected(){
+  document.querySelectorAll("#months .choice-btn").forEach(btn=>{
+    btn.classList.toggle("selected", btn.dataset.value === month);
+  });
+  document.querySelectorAll("#days .choice-btn").forEach(btn=>{
+    btn.classList.toggle("selected", btn.dataset.value === day);
+  });
+}
+
+function speakText(text){
+  const speed = parseFloat(document.getElementById("speed").value);
+  speechSynthesis.cancel();
+
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US";
+  u.rate = speed;
+  speechSynthesis.speak(u);
+}
+
+function speakSentence(){
+  const text = document.getElementById("sentence").innerText;
+  speakText(text);
+}
+
+function speakQuestion(){
+  const text = document.getElementById("questionText").innerText;
+  speakText(text);
+}
+
+function randomPick(){
+  month = months[Math.floor(Math.random() * months.length)];
+  day = days[Math.floor(Math.random() * days.length)];
+  update();
+}
+
+function changeSpeed(amount){
+  const speed = document.getElementById("speed");
+  let newValue = parseFloat(speed.value) + amount;
+
+  if(newValue < parseFloat(speed.min)) newValue = parseFloat(speed.min);
+  if(newValue > parseFloat(speed.max)) newValue = parseFloat(speed.max);
+
+  speed.value = newValue.toFixed(1);
+  updateSpeedDisplay();
+}
+
+function updateSpeedDisplay(){
+  const speed = document.getElementById("speed");
+  const speedValue = document.getElementById("speedValue");
+  speedValue.innerText = Number(speed.value).toFixed(1);
+}
+
+const monthsBox = document.getElementById("months");
+months.forEach(m=>{
+  const b = document.createElement("button");
+  b.innerText = m;
+  b.className = "choice-btn";
+  b.dataset.value = m;
+  b.onclick = ()=>{
+    month = m;
+    update();
+  };
+  monthsBox.appendChild(b);
+});
+
+const daysBox = document.getElementById("days");
+days.forEach(d=>{
+  const b = document.createElement("button");
+  b.innerText = d;
+  b.className = "choice-btn";
+  b.dataset.value = d;
+  b.onclick = ()=>{
+    day = d;
+    update();
+  };
+  daysBox.appendChild(b);
+});
+
+const speed = document.getElementById("speed");
+speed.oninput = function(){
+  updateSpeedDisplay();
+};
+
+update();
+updateSpeedDisplay();
+</script>
+
+</body>
+</html>
